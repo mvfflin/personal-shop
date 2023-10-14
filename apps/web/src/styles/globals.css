@@ -1,0 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&family=Noto+Sans+JP&family=Poppins&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn {
+  @apply bg-zinc-700 hover:bg-zinc-800 border-b-4 hover:border-b-0 border-zinc-800 text-white p-2 px-5 hover:translate-y-1 transition-all;
+}
