@@ -14,16 +14,17 @@ app.get("/", (req, res) => {
 });
 
 app.get("/catalog", (req, res) => {
-  const { search } = req.query;
+  const { search, id } = req.query;
   const catalogList: Array<CatalogItem> = [
     {
       id: 1234,
       display_name: "Baju kotak-kotak",
       harga: 400000,
       stock: 5,
-      rating: 5,
-      imageUrl:
-        "https://www.google.com/url?sa=i&url=https%3A%2F%2Fbobo.grid.id%2Fread%2F082857797%2Fmana-yang-cocok-untuk-cuaca-panas-pakai-baju-hitam-atau-putih%3Fpage%3Dall&psig=AOvVaw1G801l9giZVe4Ca3u3YaFW&ust=1697378650413000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKCw-q3a9YEDFQAAAAAdAAAAABAE",
+      rating: [1, 3, 4],
+      images: [],
+      thumbUrl:
+        "https://cdn.discordapp.com/attachments/866552863264997376/1162753141016637470/fotojet-7-minjpg-20210826124642.png?ex=653d153f&is=652aa03f&hm=54b1203335e1c3441d2756ffcb5de397e178b8618793c14c6ee87c4942961fda&",
       ulasan: ["Bahan bagus", "Adem"],
     },
     {
@@ -31,8 +32,10 @@ app.get("/catalog", (req, res) => {
       display_name: "Baju bulat-bulat",
       harga: 500000,
       stock: 5,
-      rating: 4,
-      imageUrl: "",
+      rating: [2, 3, 4],
+      images: [],
+      thumbUrl:
+        "https://cdn.discordapp.com/attachments/866552863264997376/1162753141016637470/fotojet-7-minjpg-20210826124642.png?ex=653d153f&is=652aa03f&hm=54b1203335e1c3441d2756ffcb5de397e178b8618793c14c6ee87c4942961fda&",
       ulasan: ["Bahan oke", "Bagus"],
     },
     {
@@ -40,8 +43,10 @@ app.get("/catalog", (req, res) => {
       display_name: "Topi",
       harga: 500000,
       stock: 5,
-      rating: 1,
-      imageUrl: "",
+      rating: [2, 3, 2],
+      images: [],
+      thumbUrl:
+        "https://cdn.discordapp.com/attachments/866552863264997376/1163100221396488212/topi_baseball_topi_snapback_unisex_topi_NY.png?ex=653e587e&is=652be37e&hm=f477bb665d4cb1bdc616e86979fc1d3d6b870eb1bfdbc6329299a07d37488352&",
       ulasan: ["Bahan oke", "Bagus"],
     },
   ];
@@ -53,6 +58,13 @@ app.get("/catalog", (req, res) => {
         .includes(search?.toString().toLowerCase())
     );
     return res.status(200).json(filterSearch);
+  } else if (id) {
+    const searchId = catalogList.filter(
+      (catalog) => catalog.id == parseInt(id.toString())
+    );
+    if (searchId) return res.status(200).json(searchId);
+    else
+      return res.status(201).send({ err: "Catalog with that id not found!" });
   }
 
   return res.status(200).json(catalogList);

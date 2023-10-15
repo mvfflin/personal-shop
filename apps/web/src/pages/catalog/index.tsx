@@ -4,26 +4,18 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { IoSearch } from "react-icons/io5";
-
-type CatalogItem = {
-  id: number;
-  display_name: string;
-  harga: number;
-  stock: number;
-  rating: number;
-  imageUrl: string;
-  ulasan: Array<string>;
-};
+import { CatalogItem } from "@/util/catalog-types";
+import { Rating } from "@/components";
 
 export default function Catalog() {
   const [search, setSearch] = useState<string>("");
-  const [catalog, setCatalog] = useState<Array<CatalogItem>>([]);
+  const [catalogs, setCatalog] = useState<Array<CatalogItem>>([]);
 
   const [debouncedValue] = useDebounce(search, 3000);
 
   const fetchCatalog = async () => {
     try {
-      const res = await axios.get(`http://localhost:3001/catalog`, {
+      const res = await axios.get(`${process.env.API_URL}/catalog`, {
         params: {
           search: debouncedValue,
         },
@@ -56,15 +48,23 @@ export default function Catalog() {
           id="search"
         />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 grid-flow-row gap-4 w-max mx-auto">
-        {catalog.map((catalog, index) => {
+      <div className="grid grid-cols-1 lg:grid-cols-3 grid-flow-row gap-6 w-max mx-auto">
+        {catalogs.map((catalog, index) => {
+          let sum = 0;
+          for (let i = 0; i < catalog.rating.length; i++) {
+            sum = sum + catalog.rating[i];
+          }
+          const totalRating = Math.floor(sum / (catalog.rating.length + 1));
           return (
             <Link href={`/catalog/${catalog.id}`}>
-              <div key={index} className="bg-white p-5 rounded-lg">
+              <div
+                key={index}
+                className="bg-white p-5 rounded-lg hover:scale-105 active:scale-105 focus:scale-105 transition-all active:ring-4 active:ring-blue-600 focus:ring-4 focus:ring-blue-600 hover:opacity-80"
+              >
                 <img
-                  className="w-[300px] h-auto"
+                  className="w-[300px] h-[300px] object-cover"
                   alt={catalog.display_name}
-                  src="https://cdn.discordapp.com/attachments/866552863264997376/1162753141016637470/fotojet-7-minjpg-20210826124642.png?ex=653d153f&is=652aa03f&hm=54b1203335e1c3441d2756ffcb5de397e178b8618793c14c6ee87c4942961fda&"
+                  src={catalog.thumbUrl}
                 />
                 <h1 className="font-bold font-poppins text-xl my-2">
                   {catalog.display_name}
@@ -72,6 +72,8 @@ export default function Catalog() {
                 <h2 className="font-semibold font-[Montserrat] text-md">
                   {convertRupiah(catalog.harga)}
                 </h2>
+                {}
+                <Rating value={totalRating} />
               </div>
             </Link>
           );
