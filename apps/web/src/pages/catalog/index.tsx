@@ -31,7 +31,7 @@ export default function Catalog() {
 
   useEffect(() => {
     fetchCatalog();
-  }, [debouncedValue, fetchCatalog]);
+  }, [debouncedValue]);
 
   return (
     <main>
