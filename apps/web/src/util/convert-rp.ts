@@ -1,12 +1,16 @@
-export const convertRupiah = (number: number) => {
-  let tempNum = String(number).split("").reverse();
-  let rupiah = "";
+export const convertRupiah = (number?: number) => {
+  if (!number) {
+    return "Loading...";
+  } else {
+    let tempNum = String(number).split("").reverse();
+    let rupiah = "";
 
-  for (let i = 0; i < tempNum.length; i++) {
-    if ((i + 1) % 3 == 0 && i != tempNum.length - 1) {
-      tempNum[i] = `.${tempNum[i]}`;
+    for (let i = 0; i < tempNum.length; i++) {
+      if ((i + 1) % 3 == 0 && i != tempNum.length - 1) {
+        tempNum[i] = `.${tempNum[i]}`;
+      }
     }
+    rupiah = `Rp. ${tempNum.reverse().join("")},00`;
+    return rupiah;
   }
-  rupiah = `Rp. ${tempNum.reverse().join("")},00`;
-  return rupiah;
 };

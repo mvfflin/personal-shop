@@ -1,13 +1,15 @@
+import { Navbar } from "@/components/layout/Navbar";
 import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
-  return (
-    <Html lang="en">
-      <Head />
-      <body className="w-screen h-screen bg-zinc-900 p-10">
-        <Main />
-        <NextScript />
-      </body>
-    </Html>
-  );
+    return (
+        <Html lang="en">
+            <Head />
+            <body className="bg-zinc-900">
+                <Navbar />
+                <Main />
+                <NextScript />
+            </body>
+        </Html>
+    );
 }

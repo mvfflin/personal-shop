@@ -1,6 +1,7 @@
 export type CatalogItem = {
   id: number;
   display_name: string;
+  description: string;
   harga: number;
   stock: number;
   images?: Array<string>;
