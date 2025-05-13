@@ -37,7 +37,7 @@ export default function CatalogView() {
   useEffect(() => {
     searchCatalog();
     updateRating();
-  }, [router, item]);
+  }, [router]);
 
   return (
     <main>
