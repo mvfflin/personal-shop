@@ -7,6 +7,7 @@ import { IoSearch } from "react-icons/io5";
 import { CatalogItem } from "@/util/catalog-types";
 import { Rating } from "@/components";
 import Image from "next/image";
+import catalogList from "@/constants/dummy-catalog";
 
 export default function Catalog() {
   const [search, setSearch] = useState<string>("");
@@ -29,8 +30,12 @@ export default function Catalog() {
     }
   };
 
+  const dummyCatalog = async () => {
+    setCatalog(catalogList);
+  };
+
   useEffect(() => {
-    fetchCatalog();
+    dummyCatalog();
   }, [debouncedValue]);
 
   return (
@@ -62,7 +67,7 @@ export default function Catalog() {
                 key={index}
                 className="bg-white p-5 rounded-lg hover:scale-105 active:scale-105 focus:scale-105 transition-all active:ring-4 active:ring-blue-600 focus:ring-4 focus:ring-blue-600 hover:opacity-80"
               >
-                <Image
+                <img
                   className="w-[300px] h-[300px] object-cover"
                   alt={catalog.display_name}
                   src={catalog.thumbUrl}
@@ -74,7 +79,10 @@ export default function Catalog() {
                   {convertRupiah(catalog.harga)}
                 </h2>
                 {}
-                <Rating value={totalRating} />
+                <Rating
+                  value={totalRating}
+                  review={catalog.rating.length + 1}
+                />
               </div>
             </Link>
           );

@@ -1,16 +1,62 @@
 import { Rating } from "@/components";
+import catalogList from "@/constants/dummy-catalog";
 import { CatalogItem } from "@/util/catalog-types";
 import { convertRupiah } from "@/util/convert-rp";
 import axios from "axios";
-import Image from "next/image";
+// import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { IoLocation } from "react-icons/io5";
+import Swal from "sweetalert2";
 
 export default function CatalogView() {
   const router = useRouter();
   const [item, setItem] = useState<CatalogItem>();
   const [rating, setRating] = useState<any>();
   const [qty, setQty] = useState<number>(1);
+  const [address, setAddress] = useState<string>(
+    "Jl. Gamprit, Jatiwaringin Asri, Pondokgede, Kota Bekasi, Jawa Barat, 17411"
+  );
+
+  const changeAddress = async () => {
+    Swal.fire({
+      customClass: {
+        confirmButton: "btn",
+        cancelButton: "btn",
+      },
+      titleText: "Ubah Alamat Penerima",
+      text: "Pastikan alamatmu benar agar pengiriman berjalan lancar!",
+      input: "textarea",
+      showCancelButton: true,
+      cancelButtonColor: "#ff271c",
+      confirmButtonText: "Ubah Alamat",
+      showLoaderOnConfirm: true,
+      preConfirm: async (address) => {
+        try {
+          if (!address) return false;
+          setAddress(address);
+          return true;
+        } catch (error) {
+          Swal.showValidationMessage(
+            "Gagal mengubah alamat, cek koneksi atau hubungi contact person"
+          );
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          customClass: {
+            cancelButton: "btn",
+            confirmButton: "btn",
+          },
+          showConfirmButton: true,
+          titleText: "Berhasil Mengubah alamat!",
+          icon: "success",
+        });
+      }
+    });
+  };
 
   const searchCatalog = async () => {
     const fetch = await axios.get(`http://localhost:3001/catalog`, {
@@ -20,23 +66,33 @@ export default function CatalogView() {
     });
     const data = fetch.data;
     console.log(data[0]);
+    updateRating(data[0]);
     return setItem(data[0]);
   };
 
-  const updateRating = async () => {
-    if (item) {
-      let sum = 0;
-      for (let i = 0; i < item.rating.length; i++) {
-        sum = sum + item.rating[i];
+  const searchDummyCatalog = async () => {
+    catalogList.find((val, i) => {
+      if (val.id == Number(router.query.id)) {
+        updateRating(val);
+        return setItem(val);
       }
-      const totalRating = Math.floor(sum / (item.rating.length + 1));
+    });
+  };
+
+  const updateRating = async (data: CatalogItem) => {
+    if (data) {
+      let sum = 0;
+      for (let i = 0; i < data.rating.length; i++) {
+        sum = sum + data.rating[i];
+      }
+      const totalRating = Math.floor(sum / (data.rating.length + 1));
       setRating(totalRating);
     }
   };
 
   useEffect(() => {
-    searchCatalog();
-    updateRating();
+    // searchCatalog();
+    searchDummyCatalog();
   }, [router]);
 
   return (
@@ -45,7 +101,7 @@ export default function CatalogView() {
         {item ? (
           <div className="p-10 bg-white w-full m-auto lg:flex justify-between lg:gap-20">
             <div className="h-full">
-              <Image
+              <img
                 className="w-full h-[500px] object-cover"
                 alt={item.display_name}
                 src={item.thumbUrl}
@@ -54,7 +110,7 @@ export default function CatalogView() {
                 {item.display_name}
               </h1>
               <h2 className="text-zinc-700 text-lg mt-2">Rating</h2>
-              <Rating value={rating} />
+              <Rating value={rating} review={item.rating.length + 1} />
               <hr className="border-zinc-300 my-5" />
               <h1 className="text-blue-600 text-lg mt-3 font-bold font-poppins">
                 Deskripsi barang :
@@ -62,6 +118,10 @@ export default function CatalogView() {
               <h2 className="text-zinc-800 text-lg font-poppins">
                 {item.description}
               </h2>
+              <hr className="border-zinc-300 my-5" />
+              <h1 className="text-blue-600 text-lg mt-3 font-bold font-poppins">
+                Ulasan pembeli :
+              </h1>
             </div>
             <div className="mt-10 lg:mt-0 h-full w-full border-2 rounded-md p-10">
               <h1 className="text-blue-600 font-bold text-2xl">
@@ -76,6 +136,7 @@ export default function CatalogView() {
                   type="button"
                   id="decrement-button"
                   onClick={() => setQty((prev) => prev - 1)}
+                  disabled={qty == 1 ? true : false}
                   className="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 focus:ring-2 focus:outline-none"
                 >
                   <svg
@@ -128,8 +189,71 @@ export default function CatalogView() {
                 </button>
               </div>
               <h1 className="text-blue-600 font-bold text-2xl mt-10">
+                Alamat Penerima
+              </h1>
+              <div className="flex gap-4 mt-2 bg-zinc-100 p-3">
+                <span className="text-3xl">
+                  <IoLocation />
+                </span>
+                <h1>{address}</h1>
+              </div>
+              <button
+                onClick={() => changeAddress()}
+                className="btn w-full mt-2"
+              >
+                Ubah Alamat
+              </button>
+              <h1 className="text-blue-600 font-bold text-2xl mt-10">
                 Rincian
               </h1>
+              <table className="w-full mt-5 text-sm text-left rtl:text-right text-gray-500">
+                <thead className="text-xs text-gray-700 uppercase">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 bg-gray-50">
+                      Detail
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-right">
+                      Biaya
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50"
+                    >
+                      Harga Total
+                    </th>
+                    <td className="px-6 py-4 text-right">
+                      {convertRupiah(item.harga * qty)}
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50"
+                    >
+                      Jasa Pengiriman
+                    </th>
+                    <td className="px-6 py-4 text-right">
+                      {convertRupiah(item.harga - (item.harga * 90) / 100)}
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50"
+                    >
+                      Asuransi Pengiriman
+                    </th>
+                    <td className="px-6 py-4 text-right">
+                      {convertRupiah(item.harga - (item.harga * 90) / 100)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <button className="btn w-full mt-2">Bayar</button>
             </div>
           </div>
         ) : null}
