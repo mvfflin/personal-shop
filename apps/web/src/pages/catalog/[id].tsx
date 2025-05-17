@@ -82,10 +82,10 @@ export default function CatalogView() {
   const updateRating = async (data: CatalogItem) => {
     if (data) {
       let sum = 0;
-      for (let i = 0; i < data.rating.length; i++) {
-        sum = sum + data.rating[i];
-      }
-      const totalRating = Math.floor(sum / (data.rating.length + 1));
+      data.review.forEach((review) => {
+        sum = sum + review.rating;
+      });
+      const totalRating = Math.floor(sum / (data.review.length + 1));
       setRating(totalRating);
     }
   };
@@ -110,18 +110,31 @@ export default function CatalogView() {
                 {item.display_name}
               </h1>
               <h2 className="text-zinc-700 text-lg mt-2">Rating</h2>
-              <Rating value={rating} review={item.rating.length + 1} />
+              <Rating value={rating} review={item.review.length + 1} />
               <hr className="border-zinc-300 my-5" />
-              <h1 className="text-blue-600 text-lg mt-3 font-bold font-poppins">
+              <h1 className="text-blue-600 text-xl mt-3 font-bold font-poppins">
                 Deskripsi barang :
               </h1>
               <h2 className="text-zinc-800 text-lg font-poppins">
                 {item.description}
               </h2>
               <hr className="border-zinc-300 my-5" />
-              <h1 className="text-blue-600 text-lg mt-3 font-bold font-poppins">
+              <h1 className="text-blue-600 text-xl my-3 font-bold font-poppins">
                 Ulasan pembeli :
               </h1>
+              <div className="p-3 gap-5 flex flex-col">
+                {item.review.map((review, index) => {
+                  return (
+                    <div key={index} className="border-2 rounded-md p-2">
+                      <h1 className="text-lg font-bold">{review.name}</h1>
+                      <Rating value={review.rating} small />
+                      <h2 className="text-md p-2 text-zinc-900">
+                        {review.message}
+                      </h2>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
             <div className="mt-10 lg:mt-0 h-full w-full border-2 rounded-md p-10">
               <h1 className="text-blue-600 font-bold text-2xl">

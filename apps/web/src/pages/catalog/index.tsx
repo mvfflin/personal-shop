@@ -57,10 +57,10 @@ export default function Catalog() {
       <div className="grid grid-cols-1 lg:grid-cols-3 grid-flow-row gap-6 w-max mx-auto">
         {catalogs.map((catalog, index) => {
           let sum = 0;
-          for (let i = 0; i < catalog.rating.length; i++) {
-            sum = sum + catalog.rating[i];
-          }
-          const totalRating = Math.floor(sum / (catalog.rating.length + 1));
+          catalog.review.forEach((review) => {
+            sum = sum + review.rating;
+          });
+          const totalRating = Math.floor(sum / (catalog.review.length + 1));
           return (
             <Link href={`/catalog/${catalog.id}`} key={index}>
               <div
@@ -81,7 +81,7 @@ export default function Catalog() {
                 {}
                 <Rating
                   value={totalRating}
-                  review={catalog.rating.length + 1}
+                  review={catalog.review.length + 1}
                 />
               </div>
             </Link>

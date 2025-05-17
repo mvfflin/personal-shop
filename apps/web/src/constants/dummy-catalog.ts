@@ -10,11 +10,31 @@ const catalogList: Array<CatalogItem> = [
     description: lorem,
     harga: 400000,
     stock: 5,
-    rating: [1, 3, 4, 5, 5],
     images: [],
     thumbUrl:
       "https://media.discordapp.net/attachments/1371884241062854726/1371884258024751104/kISLfsI.png?ex=68295f87&is=68280e07&hm=409f5671f15fab136914ee35c6f5fc7eb5311cd8a063fa334f49857ff79b08d0&=&format=webp&quality=lossless&width=945&height=945",
-    ulasan: ["Bahan bagus", "Adem"],
+    review: [
+      {
+        name: "User123",
+        message: "Bahas bagus, sangat nyaman dipakai",
+        rating: 5,
+      },
+      {
+        name: "User2132",
+        message: "Sangat nyaman",
+        rating: 5,
+      },
+      {
+        name: "User2336",
+        message: "Barang tidak sesuai pesanan",
+        rating: 2,
+      },
+      {
+        name: "User1333",
+        message: "Pengiriman telat",
+        rating: 1,
+      },
+    ],
   },
   {
     id: 3213,
@@ -22,11 +42,31 @@ const catalogList: Array<CatalogItem> = [
     description: lorem,
     harga: 500000,
     stock: 5,
-    rating: [2, 3, 4],
     images: [],
     thumbUrl:
       "https://media.discordapp.net/attachments/1371884241062854726/1371884258024751104/kISLfsI.png?ex=68295f87&is=68280e07&hm=409f5671f15fab136914ee35c6f5fc7eb5311cd8a063fa334f49857ff79b08d0&=&format=webp&quality=lossless&width=945&height=945",
-    ulasan: ["Bahan oke", "Bagus"],
+    review: [
+      {
+        name: "User123",
+        message: "Bahas bagus, sangat nyaman dipakai",
+        rating: 4,
+      },
+      {
+        name: "User2132",
+        message: "Sangat nyaman",
+        rating: 4,
+      },
+      {
+        name: "User2336",
+        message: "Barang tidak sesuai pesanan",
+        rating: 1,
+      },
+      {
+        name: "User1333",
+        message: "Pengiriman telat",
+        rating: 3,
+      },
+    ],
   },
   {
     id: 1239,
@@ -34,11 +74,31 @@ const catalogList: Array<CatalogItem> = [
     description: lorem,
     harga: 500000,
     stock: 5,
-    rating: [2, 3, 2],
     images: [],
     thumbUrl:
       "https://media.discordapp.net/attachments/1371884241062854726/1371884258024751104/kISLfsI.png?ex=68295f87&is=68280e07&hm=409f5671f15fab136914ee35c6f5fc7eb5311cd8a063fa334f49857ff79b08d0&=&format=webp&quality=lossless&width=945&height=945",
-    ulasan: ["Bahan oke", "Bagus"],
+    review: [
+      {
+        name: "User123",
+        message: "Bahas bagus, sangat nyaman dipakai",
+        rating: 3,
+      },
+      {
+        name: "User2132",
+        message: "Sangat nyaman",
+        rating: 4,
+      },
+      {
+        name: "User2336",
+        message: "Barang tidak sesuai pesanan",
+        rating: 2,
+      },
+      {
+        name: "User1333",
+        message: "Pengiriman telat",
+        rating: 3,
+      },
+    ],
   },
 ];
 
