@@ -8,17 +8,24 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { IoLocation } from "react-icons/io5";
 import Swal from "sweetalert2";
+// import L, { LayerGroup, Map } from "leaflet";
 
 export default function CatalogView() {
   const router = useRouter();
   const [item, setItem] = useState<CatalogItem>();
   const [rating, setRating] = useState<any>();
   const [qty, setQty] = useState<number>(1);
+  const [swalAdds, setSwalAdds] = useState<string>("");
   const [address, setAddress] = useState<string>(
     "Jl. Gamprit, Jatiwaringin Asri, Pondokgede, Kota Bekasi, Jawa Barat, 17411"
   );
 
   const changeAddress = async () => {
+    const L = (await import("leaflet")).default;
+    const { Map, LayerGroup } = await import("leaflet");
+    let mapInstance: null | typeof Map | typeof LayerGroup<any> = null;
+    let marker: L.Layer | null = null;
+
     Swal.fire({
       customClass: {
         confirmButton: "btn",
@@ -26,11 +33,91 @@ export default function CatalogView() {
       },
       titleText: "Ubah Alamat Penerima",
       text: "Pastikan alamatmu benar agar pengiriman berjalan lancar!",
-      input: "textarea",
+      html: `
+            <div id="map-in-swal" class="w-full h-96 rounded-lg shadow-inner mb-4"></div>
+            <div id="address-display-in-swal" class="border border-gray-300 p-4 rounded-lg text-gray-700 text-center min-h-[60px] flex items-center justify-center">
+              ${swalAdds}
+            </div>
+      `,
       showCancelButton: true,
       cancelButtonColor: "#ff271c",
-      confirmButtonText: "Ubah Alamat",
+      confirmButtonText: "Pilih Alamat",
       showLoaderOnConfirm: true,
+      didOpen: () => {
+        if (mapInstance != null) {
+          if (
+            "remove" in mapInstance &&
+            typeof mapInstance.remove === "function"
+          ) {
+            mapInstance.remove();
+          }
+        }
+
+        mapInstance = L.map("map-in-swal").setView(
+          [-6.2088, 106.8456],
+          13
+        ) as any;
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution:
+            '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(mapInstance as any);
+
+        (mapInstance as any).invalidateSize();
+
+        (mapInstance as any).on("click", async (e: any) => {
+          const { lat, lng } = e.latlng;
+
+          // Update display to show loading state
+          setSwalAdds("Fetching address...");
+
+          // Remove previous marker if it exists
+          if (
+            marker &&
+            mapInstance &&
+            "removeLayer" in mapInstance &&
+            typeof (mapInstance as any).removeLayer === "function"
+          ) {
+            (mapInstance as any).removeLayer(marker);
+          }
+
+          // Add a new marker at the clicked location
+          if (mapInstance && mapInstance instanceof L.Map) {
+            marker = L.marker(e.latlng)
+              .addTo(mapInstance)
+              .bindPopup("Location selected!")
+              .openPopup();
+          }
+
+          try {
+            const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+            const response = await fetch(nominatimUrl, {
+              headers: {
+                "User-Agent":
+                  "LeafletSwalLocationPickerApp/1.0 (your-email@example.com)",
+              },
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data && data.display_name) {
+              setSwalAdds(`Alamat: ${data.display_name}`);
+            } else {
+              setSwalAdds(
+                "Tidak ada alamat spesifik untuk lokasi yang ditandai."
+              );
+            }
+          } catch (error: any) {
+            console.error("Error fetching address:", error);
+            setSwalAdds(`Error: Tidak dapat mengambil alamat${error.message}`);
+          }
+        });
+      },
       preConfirm: async (address) => {
         try {
           if (!address) return false;
@@ -136,6 +223,7 @@ export default function CatalogView() {
                 })}
               </div>
             </div>
+            <hr className="border-zinc-300 my-5 lg:hidden" />
             <div className="mt-10 lg:mt-0 h-full w-full border-2 rounded-md p-10">
               <h1 className="text-blue-600 font-bold text-2xl">
                 Harga<span className="text-sm text-zinc-700"> / Item</span>
@@ -144,7 +232,7 @@ export default function CatalogView() {
                 {convertRupiah(item.harga)}
               </h1>
               <h1 className="text-blue-600 font-bold text-2xl mt-10">Jumlah</h1>
-              <div className="relative flex items-center max-w-[8rem] mt-2">
+              <div className="relative flex items-center max-w-[8rem] mt-2 z-10">
                 <button
                   type="button"
                   id="decrement-button"
